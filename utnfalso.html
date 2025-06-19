@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ingreso Alumnos - SYSACAD | UTN</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .marquee {
+            animation: marquee 20s linear infinite;
+        }
+        @keyframes marquee {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+        .menu-item {
+            @apply relative bg-gray-50 border border-gray-200 rounded-lg p-6 flex flex-col items-center justify-center text-center transition-all duration-300 hover:shadow-lg hover:bg-blue-50 hover:border-blue-300 transform hover:-translate-y-1 cursor-pointer;
+        }
+        .menu-item i {
+            @apply mb-3 text-blue-600;
+        }
+        .content-view {
+            @apply hidden container mx-auto px-4 py-8 md:py-16;
+        }
+        .notification-dot {
+            @apply absolute top-3 right-3 w-3 h-3 bg-red-500 rounded-full border-2 border-white;
+        }
+        #modal-overlay.hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <!-- Header -->
+    <header class="bg-white shadow-md">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between py-2">
+                <img src="https://placehold.co/300x60/003366/FFFFFF?text=UTN+FRBB" alt="Logo UTN FRBB" class="h-16" onerror="this.onerror=null;this.src='https://placehold.co/300x60/cccccc/000000?text=Logo+Not+Found';">
+                <nav class="hidden md:flex items-center space-x-4">
+                    <a href="#" class="text-gray-600 hover:text-blue-700 transition-colors">Inicio</a>
+                    <a href="#" class="text-gray-600 hover:text-blue-700 transition-colors">Ingreso 2025</a>
+                    <div class="relative">
+                        <select onchange="window.open(this.value, '_blank')" class="bg-gray-200 text-gray-700 py-2 px-3 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option selected disabled>Calendario Académico</option>
+                            <option value="#">2025</option>
+                            <option value="#">2024</option>
+                            <option value="#">2023</option>
+                        </select>
+                    </div>
+                    <a href="#" class="text-gray-600 hover:text-blue-700 transition-colors">Mail</a>
+                    <a href="#" class="text-gray-600 hover:text-blue-700 transition-colors">Horarios</a>
+                </nav>
+                <button id="mobile-menu-button" class="md:hidden p-2 rounded-md text-gray-600 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500">
+                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                    </svg>
+                </button>
+            </div>
+            <div id="mobile-menu" class="hidden md:hidden pb-4">
+                <a href="#" class="block py-2 px-4 text-sm text-gray-600 hover:bg-gray-200 rounded-md">Inicio</a>
+                <a href="#" class="block py-2 px-4 text-sm text-gray-600 hover:bg-gray-200 rounded-md">Ingreso 2025</a>
+                <a href="#" class="block py-2 px-4 text-sm text-gray-600 hover:bg-gray-200 rounded-md">Mail</a>
+                <a href="#" class="block py-2 px-4 text-sm text-gray-600 hover:bg-gray-200 rounded-md">Horarios</a>
+                 <select onchange="if(this.value) window.open(this.value, '_blank')" class="w-full mt-2 bg-gray-200 text-gray-700 py-2 px-3 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option selected disabled>Calendario Académico</option>
+                    <option value="#">2025</option>
+                    <option value="#">2024</option>
+                    <option value="#">2023</option>
+                </select>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Marquee Announcement -->
+    <div id="marquee-container" class="bg-gray-800 text-white py-3 overflow-hidden">
+         <a href="#" class="whitespace-nowrap marquee inline-block">
+            Ingresante 2024 y 2025: Consultá tu número de LEGAJO AQUÍ
+        </a>
+    </div>
+
+    <!-- Login View -->
+    <main id="loginView" class="container mx-auto px-4 py-8 md:py-16 flex flex-col items-center">
+        <div class="w-full max-w-md bg-white rounded-xl shadow-2xl p-8">
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-800 text-center mb-6">Inicio de Sesión</h1>
+            <form id="loginForm" name="login">
+                <div class="mb-4">
+                    <label for="selectFacultad" class="block text-gray-700 text-sm font-bold mb-2">Facultad:</label>
+                    <select id="selectFacultad" name="selectFacultad" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"></select>
+                </div>
+                <div class="mb-4">
+                    <label for="legajo" class="block text-gray-700 text-sm font-bold mb-2">Legajo:</label>
+                    <input type="text" id="legajo" name="legajo" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" placeholder="Tu número de legajo">
+                </div>
+                <div class="mb-6">
+                    <label for="password" class="block text-gray-700 text-sm font-bold mb-2">Contraseña:</label>
+                    <input type="password" id="password" name="password" maxlength="12" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" placeholder="Máximo 11 caracteres">
+                </div>
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-transform transform hover:scale-105">Ingresar</button>
+                <div id="loginMessage" class="mt-4 text-center"></div>
+            </form>
+        </div>
+        <div class="w-full max-w-md mt-8 text-center">
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative mb-4" role="alert">
+                <strong class="font-bold">¡Atención!</strong>
+                <span class="block sm:inline"> El password no debe superar los 11 caracteres.</span>
+            </div>
+            <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded-lg relative" role="alert">
+                <strong class="font-bold">Recordatorio:</strong>
+                <span class="block sm:inline"> Es obligatorio contestar la encuesta sobre su percepción de la cátedra.</span>
+            </div>
+        </div>
+        <div class="mt-8 text-center text-gray-600">
+            <h2 class="text-lg font-semibold mb-2">Consultas por WhatsApp</h2>
+            <p><strong>Dto. Alumnos (8 a 15hs):</strong> 291-506-6435</p>
+            <p><strong>Dto. Alumnos (13 a 20hs):</strong> 11-5157-3102</p>
+        </div>
+    </main>
+
+    <!-- Student Menu View -->
+    <div id="studentMenuView" class="content-view">
+        <div class="flex justify-between items-center mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-800">Menú del Alumno</h1>
+                <p id="welcomeMessage" class="text-gray-600"></p>
+            </div>
+            <button id="logoutButton" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors flex items-center">
+                <i data-lucide="log-out" class="mr-2"></i>
+                Cerrar Sesión
+            </button>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="menu-item" data-target="courseRegistrationView"><i data-lucide="edit-3" class="w-12 h-12"></i><h3 class="text-lg font-semibold text-gray-700">Inscripción a Cursado</h3><p class="text-sm text-gray-500">Anótate a las materias.</p></div>
+            <div class="menu-item" data-target="examRegistrationView"><i data-lucide="calendar-plus" class="w-12 h-12"></i><h3 class="text-lg font-semibold text-gray-700">Inscripción a Examen</h3><p class="text-sm text-gray-500">Inscríbete a las mesas.</p></div>
+            <div class="menu-item" data-target="myRegistrationsView"><i data-lucide="file-check-2" class="w-12 h-12"></i><h3 class="text-lg font-semibold text-gray-700">Mis Inscripciones</h3><p class="text-sm text-gray-500">Consulta tus inscripciones.</p></div>
+            <div class="menu-item" data-target="academicHistoryView"><i data-lucide="graduation-cap" class="w-12 h-12"></i><h3 class="text-lg font-semibold text-gray-700">Historia Académica</h3><p class="text-sm text-gray-500">Consulta tu estado y notas.</p></div>
+            <div class="menu-item" data-target="surveysView"><i data-lucide="clipboard-list" class="w-12 h-12"></i><h3 class="text-lg font-semibold text-gray-700">Encuestas Docentes</h3><p class="text-sm text-gray-500">Completa las encuestas.</p></div>
+            <div class="menu-item" data-target="proceduresView"><span id="tramites-notification" class="notification-dot hidden"></span><i data-lucide="user-cog" class="w-12 h-12"></i><h3 class="text-lg font-semibold text-gray-700">Trámites</h3><p class="text-sm text-gray-500">Solicita certificados y más.</p></div>
+        </div>
+    </div>
+    
+    <!-- Procedures View -->
+    <div id="proceduresView" class="content-view bg-white p-8 rounded-lg shadow-lg">
+        <h2 class="text-2xl font-bold mb-6">Trámites</h2>
+        <div id="procedures-list" class="space-y-4">
+            <!-- Content will be generated by JS -->
+        </div>
+        <button class="back-to-menu-btn mt-8 bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg">Volver al Menú</button>
+    </div>
+
+    <!-- Modal for Complaint -->
+    <div id="modal-overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+        <div id="modal-content" class="bg-white p-8 rounded-lg shadow-2xl max-w-2xl w-full">
+            <h2 class="text-2xl font-bold mb-4 text-red-600">Notificación Importante</h2>
+            <div class="prose max-w-none border-l-4 border-red-500 pl-4">
+                <h3 class="font-bold">Denuncia por Violencia de Género</h3>
+                <p class="text-sm text-gray-500">Bahia Blanca, 19 de junio de 2025</p>
+                <p><strong>Señores Juzgado Competente:</strong></p>
+                <p>Yo, Martina Catrilaf, DNI 99.999.999, denuncio a Matías Santiago Grill, por violencia de género. El viernes 13, en el Club, me agredió verbalmente con insultos y amenazas, y físicamente al empujarme, causándome temor y ansiedad. Los hechos fueron presenciados por seguridad del complejo. Poseo mensajes amenazantes como prueba. Solicito investigación, medidas de protección como orden de alejamiento, y asistencia legal. Fundamento esta denuncia en ley 26.485. Notificaciones a Villa Mitre.</p>
+                <p class="text-right mt-4"><strong>Firma:</strong> Gaston Fasito</p>
+            </div>
+            <div class="text-right mt-6">
+                 <button id="close-modal-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg">Cerrar</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white mt-16">
+        <div class="container mx-auto px-4 py-6 text-center text-sm">
+            <p>UTN - Universidad Tecnológica Nacional - Facultad Regional Bahía Blanca</p>
+            <p>11 de Abril 461 - Tel-Fax: 0291 455 5311 - C.P. B8000LMI - Bahía Blanca - Buenos Aires - Argentina</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            lucide.createIcons();
+            
+            // --- Database of users ---
+            let currentUser = null;
+            const users = [
+                { name: "Fabrizio, Pindave, Fernandez", legajo: "904763", password: "200593", hasNotification: false },
+                { name: "Julian, Santiago, Guzman", legajo: "901281", password: "311204", hasNotification: false },
+                { name: "Matias Santiago Grill", legajo: "905726", password: "ROSCAFLOJA", hasNotification: true }
+            ];
+
+            // --- View and element references ---
+            const loginView = document.getElementById('loginView');
+            const studentMenuView = document.getElementById('studentMenuView');
+            const proceduresView = document.getElementById('proceduresView');
+            const proceduresList = document.getElementById('procedures-list');
+            const marqueeContainer = document.getElementById('marquee-container');
+            const welcomeMessage = document.getElementById('welcomeMessage');
+            const tramitesNotification = document.getElementById('tramites-notification');
+            const modalOverlay = document.getElementById('modal-overlay');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+            
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => { mobileMenu.classList.toggle('hidden'); });
+
+            // --- Faculty selector setup ---
+            const selectFacultad = document.getElementById("selectFacultad");
+            const faculties = [ { "code": "2", "name": "Bahía Blanca" }, { "code": "1", "name": "Buenos Aires" } ];
+            faculties.forEach(city => {
+                selectFacultad.add(new Option(city.name, city.code));
+            });
+            selectFacultad.value = '2';
+
+            // --- Login Logic ---
+            const loginForm = document.getElementById('loginForm');
+            loginForm.addEventListener('submit', function(event) {
+                event.preventDefault(); 
+                const legajoInput = document.getElementById('legajo').value;
+                const passwordInput = document.getElementById('password').value;
+                const user = users.find(u => u.legajo === legajoInput && u.password === passwordInput);
+
+                if (user) {
+                    currentUser = user;
+                    welcomeMessage.textContent = `Bienvenido, ${user.name} (Legajo: ${user.legajo})`;
+                    loginView.classList.add('hidden');
+                    marqueeContainer.classList.add('hidden');
+                    studentMenuView.classList.remove('hidden');
+                    document.getElementById('loginMessage').innerHTML = '';
+                    
+                    if (currentUser.hasNotification) {
+                        tramitesNotification.classList.remove('hidden');
+                    } else {
+                        tramitesNotification.classList.add('hidden');
+                    }
+                } else {
+                    document.getElementById('loginMessage').innerHTML = '<p class="text-red-600 font-bold">Legajo o contraseña incorrectos.</p>';
+                    if (window.navigator.vibrate) window.navigator.vibrate(200);
+                }
+            });
+
+            // --- Logout Logic ---
+            document.getElementById('logoutButton').addEventListener('click', function() {
+                currentUser = null;
+                document.querySelectorAll('.content-view').forEach(view => view.classList.add('hidden'));
+                loginView.classList.remove('hidden');
+                marqueeContainer.classList.remove('hidden');
+                document.getElementById('loginForm').reset();
+                document.getElementById('legajo').focus();
+            });
+            
+            // --- Render Procedures ---
+            function renderProcedures() {
+                proceduresList.innerHTML = ''; // Clear previous content
+                if (currentUser && currentUser.legajo === '905726') {
+                    const statusBadge = currentUser.hasNotification 
+                        ? `<span class="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">Nueva</span>`
+                        : `<span class="bg-gray-200 text-gray-700 text-xs font-bold px-2 py-1 rounded-full">Vista</span>`;
+
+                    const procedureItem = `
+                        <div class="border rounded-lg p-4 flex justify-between items-center">
+                            <div>
+                                <h4 class="font-bold">Denuncia por Violencia de Género</h4>
+                                <p class="text-sm text-gray-500">Recibido: 19 de junio de 2025</p>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                                ${statusBadge}
+                                <button class="view-complaint-btn bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md text-sm">Ver</button>
+                            </div>
+                        </div>`;
+                    proceduresList.innerHTML = procedureItem;
+                } else {
+                    proceduresList.innerHTML = '<p class="text-gray-500">No tienes trámites pendientes.</p>';
+                }
+            }
+            
+            // --- Navigation Logic ---
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const targetViewId = item.getAttribute('data-target');
+                    studentMenuView.classList.add('hidden');
+                    
+                    if (targetViewId === 'proceduresView') {
+                        renderProcedures();
+                        proceduresView.classList.remove('hidden');
+                    } else {
+                        // Logic for other menu items if needed
+                        alert(`Sección '${targetViewId}' no implementada.`);
+                        studentMenuView.classList.remove('hidden');
+                    }
+                });
+            });
+
+            document.querySelectorAll('.back-to-menu-btn').forEach(button => {
+                button.closest('.content-view').classList.add('hidden');
+                studentMenuView.classList.remove('hidden');
+            });
+            
+            // --- Modal and Notification Logic ---
+            proceduresList.addEventListener('click', function(event) {
+                if(event.target.classList.contains('view-complaint-btn')) {
+                    modalOverlay.classList.remove('hidden');
+                    if (currentUser.hasNotification) {
+                        currentUser.hasNotification = false;
+                        tramitesNotification.classList.add('hidden');
+                        renderProcedures(); // Re-render to update the badge from "Nueva" to "Vista"
+                    }
+                }
+            });
+
+            closeModalBtn.addEventListener('click', () => modalOverlay.classList.add('hidden'));
+            modalOverlay.addEventListener('click', (event) => {
+                if (event.target === modalOverlay) {
+                     modalOverlay.classList.add('hidden');
+                }
+            });
+
+            // --- Initial setup ---
+            document.getElementById('legajo').focus();
+        });
+    </script>
+</body>
+</html>
